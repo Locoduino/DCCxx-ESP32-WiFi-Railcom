@@ -1,6 +1,8 @@
 /*
 
-   Ce programme permet la réalisation d'une station de commande DCC qui génère le cutout nécessaire pour la détection RailCom
+  # DCCxx-ESP32-Railcom
+
+Ce programme permet la réalisation d'une station de commande DCC qui génère le cutout nécessaire pour la détection RailCom
 
    *******************************************************
    IL NE FONCTIONNE QUE SUR UN ENVIRONNEMENT ESP32
@@ -11,8 +13,7 @@
 
    Il a été écrit sur la base de classes C++ pour pouvoir intégrer facilement les évolutions futures : commandes de fonctions, réglages et lecture de CVs...
 
-   Il a été conçu pour recevoir des commandes extérieures. Pour l'instant sur le seul port série, mais à l'avenir en Ethernet et en WiFi.
-   A ce stade, c'est principalement un programme de test en particulier pour tester le retour d'information RailCom
+   Il a été conçu pour recevoir des commandes extérieures. Sur le port série et en WiFi.
 
   Pour assurer une compatibilité maximale avec les différents systèmes de commande déjà existants, le protocole de messagerie adopté est celui de DCC++.
   ce qui permet le pilotage avec JMRI par exemple (Testé).
@@ -50,6 +51,7 @@
         Chritophe Bobille / LOCODUINO (http://www.locoduino.org) janv 2022 © locoduino 2022
         Original description from DCC++ BASE STATION a C++ program written by Gregg E. Berman GNU General Public License.
         Original description from Pascal Barlier GNU General Public License
+
 
 */
 
