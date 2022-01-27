@@ -9,8 +9,8 @@
 #define CURRENT_MONITOR_PIN_MAIN    GPIO_NUM_36
 
 
-#define WIFI_SSID              "Freebox-5C00B0"
-#define WIFI_PSW               "relat@@-apiarius3-evitandam#-resolvatis9"
+#define WIFI_SSID              "xxxxxxxxx"
+#define WIFI_PSW               "xxxxxxxxx"
 
 
 // DEFINE COMMUNICATIONS INTERFACE
