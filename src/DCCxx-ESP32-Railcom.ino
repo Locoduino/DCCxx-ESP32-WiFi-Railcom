@@ -126,7 +126,7 @@ void setup()
 
   dcc.setup();
   dcc.clear();
-  //mainMonitor.setup(CLIENT);
+  mainMonitor.setup(CLIENT);
 
   xTaskCreate(
       Task0,     /* Task function. */
