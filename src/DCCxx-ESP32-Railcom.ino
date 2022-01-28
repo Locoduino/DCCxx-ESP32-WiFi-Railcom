@@ -143,15 +143,17 @@ void Task0(void *parameter)
   long compt = 0;
   for (;;)
   {
-    mainMonitor.check();
-    if (compt == 1000ul)
+    if (CLIENT != nullptr)
     {
-      if (CLIENT != nullptr)
+      mainMonitor.check(CLIENT);
+      if (compt == 1000ul)
+      {
         CLIENT->printf("<a %d>", (int)(mainMonitor.current() / 4));
-      compt = 0;
+        compt = 0;
+      }
+      delay(1);
+      compt++;
     }
-    delay(1);
-    compt++;
   }
   vTaskDelete(NULL);
 }
@@ -203,7 +205,7 @@ void loop()
           sprintf(commandString, "%s%c", commandString, c);
         }
       }
-    }// while
+    } // while
   }
 #endif
   delay(1);
