@@ -72,7 +72,7 @@ const uint32_t stackSize = 10000;
 HardwareSerial *CLIENT = &Serial;
 #elif COMM_INTERFACE == 1
 WiFiServer SERVER(2560); // Create and instance of an WiFiServer
-WiFiClient *CLIENT = NULL;
+WiFiClient *CLIENT = nullptr;
 #endif
 
 DCC dcc;
@@ -147,7 +147,7 @@ void Task0(void *parameter)
     mainMonitor.check();
     if (compt == 1000ul)
     {
-      if(CLIENT != NULL)
+      if(CLIENT != nullptr)
         CLIENT->printf("<a %d>", (int)(mainMonitor.current() / 4));
       compt = 0;
     }
@@ -169,13 +169,14 @@ void loop()
     switch (c)
     {
     case '<':
-      sprintf(commandString, "");
+      strcpy(commandString, "\0");
       break;
     case '>':
       Serial.println(commandString);
       dcc.parse(commandString, &Serial);
       break;
     default:
+      //sprintf(commandString, "%s%c", commandString, c);
       sprintf(commandString, "%s%c", commandString, c);
     }
   } // while
@@ -192,7 +193,7 @@ void loop()
         switch (c)
         {
         case '<':
-          sprintf(commandString, "");
+      strcpy(commandString, "\0");
           break;
         case '>':
           Serial.println(commandString);
