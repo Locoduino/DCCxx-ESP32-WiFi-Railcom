@@ -12,18 +12,17 @@ Part of DCC++ BASE STATION for the Arduino
 
 ///////////////////////////////////////////////////////////////////////////////
 
-CurrentMonitor::CurrentMonitor(int pin, char *msg) : 
-m_pin(pin),
-m_current(0)
+CurrentMonitor::CurrentMonitor(int pin, char *msg) : m_pin(pin),
+                                                     m_current(0)
 {
   m_msg = msg;
 } // CurrentMonitor::CurrentMonitor
 
-
-void CurrentMonitor::setup(INTERFACE* client)
+void CurrentMonitor::setup(INTERFACE *client)
 {
   pinMode(m_pin, INPUT);
-  client->printf("<p0>");
+  if (client != nullptr)
+    client->printf("<p0>");
 }
 
 float CurrentMonitor::current()
