@@ -27,7 +27,7 @@ struct CurrentMonitor
   char *m_msg;
   CurrentMonitor(int, char *);
   static boolean checkTime();
-  void check();
+  void check(INTERFACE*);
   void setup(INTERFACE*);
   float current();
 };
