@@ -16,7 +16,7 @@
 // DEFINE COMMUNICATIONS INTERFACE
 //  0 = Serial Port
 //  1 = Wifi
-#define COMM_INTERFACE   1
+#define COMM_INTERFACE   0
 
 #if COMM_INTERFACE == 0
   #define INTERFACE HardwareSerial
