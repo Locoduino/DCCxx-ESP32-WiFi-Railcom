@@ -55,7 +55,7 @@
 
 */
 
-#define VERSION "v 0.8"
+#define VERSION "v 0.9"
 #define PROJECT "DCCxx ESP32 WIFI"
 
 #include "DCC.h"
@@ -66,7 +66,7 @@
 char msg[] = "<p2>";
 CurrentMonitor mainMonitor(CURRENT_MONITOR_PIN_MAIN, msg); // create monitor for current on Main Track
 void Task0(void *pvParameters);
-const uint32_t stackSize = 10000;
+const uint32_t stackSize = 20000;
 
 #if COMM_INTERFACE == 0
 HardwareSerial *CLIENT = &Serial;
@@ -87,8 +87,7 @@ void setup()
   Serial.printf("\nFichier   :      %s\n", __FILE__);
   Serial.printf("\nCompiled  :      %s - %s \n\n", __DATE__, __TIME__);
 
-
-// Infos ESP32
+  // Infos ESP32
   // esp_chip_info_t out_info;
   // esp_chip_info(&out_info);
   // Serial.print("getSketchSize : "); Serial.println(String(ESP.getSketchSize() / 1000) + " Ko");
@@ -104,11 +103,11 @@ void setup()
   // Serial.println();
 
 #if COMM_INTERFACE == 1
-   IPAddress local_IP(192, 168, 1, 200);
-   IPAddress gateway(192, 168, 1, 1);
-   IPAddress subnet(255, 255, 255, 0);
-   if (!WiFi.config(local_IP, gateway, subnet))
-     Serial.println("STA Failed to configure");
+  IPAddress local_IP(192, 168, 1, 200);
+  IPAddress gateway(192, 168, 1, 1);
+  IPAddress subnet(255, 255, 255, 0);
+  if (!WiFi.config(local_IP, gateway, subnet))
+    Serial.println("STA Failed to configure");
   WiFi.begin(WIFI_SSID, WIFI_PSW);
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -147,7 +146,7 @@ void Task0(void *parameter)
     mainMonitor.check();
     if (compt == 1000ul)
     {
-      if(CLIENT != nullptr)
+      if (CLIENT != nullptr)
         CLIENT->printf("<a %d>", (int)(mainMonitor.current() / 4));
       compt = 0;
     }
@@ -176,14 +175,15 @@ void loop()
       dcc.parse(commandString, &Serial);
       break;
     default:
-      //sprintf(commandString, "%s%c", commandString, c);
+      // sprintf(commandString, "%s%c", commandString, c);
       sprintf(commandString, "%s%c", commandString, c);
     }
   } // while
 
 #elif COMM_INTERFACE == 1
   WiFiClient client = SERVER.available();
-  if(client) {
+  if (client)
+  {
     CLIENT = &client;
     while (CLIENT->connected())
     { // loop while the client's connected
@@ -193,7 +193,7 @@ void loop()
         switch (c)
         {
         case '<':
-      strcpy(commandString, "\0");
+          strcpy(commandString, "\0");
           break;
         case '>':
           Serial.println(commandString);
@@ -202,9 +202,9 @@ void loop()
         default:
           sprintf(commandString, "%s%c", commandString, c);
         }
-      } // while
-    }
+      }
+    }// while
   }
 #endif
-  delay(10);
+  delay(1);
 }
