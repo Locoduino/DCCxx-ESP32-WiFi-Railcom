@@ -137,7 +137,6 @@ void DCC::setup()
   digitalWrite(m_pinPwm, LOW);
   digitalWrite(m_pinDir, LOW);
   digitalWrite(m_pinBrake, LOW);
-
   ptrToClass = this;
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, timerHandler, true);
@@ -180,10 +179,8 @@ void DCC::setFunction(uint16_t locoAddr, byte fByte, byte eByte)
   switch (fByte >> 5)
   {
   case (B100):
-    // Serial.println("B100");
     type = DCC_PACKET_TYPE_F0_F4;
     data = (fByte & 0x1F);
-    // Serial.println(data);
     break;
   case (B101):
     switch (fByte >> 4)
@@ -193,7 +190,6 @@ void DCC::setFunction(uint16_t locoAddr, byte fByte, byte eByte)
       data = (fByte & 0xF);
       break;
     case (B1010):
-      // Serial.println("B1011");
       type = DCC_PACKET_TYPE_F9_F12;
       data = (fByte & 0xF);
       break;
@@ -362,7 +358,6 @@ void DCC::clear()
   m_packetUsed = 0;
 }
 
-// void DCC::parse(char *com, WiFiClient *client)
 void DCC::parse(char *com, INTERFACE *client)
 {
   int a, x, s, d;
