@@ -1,6 +1,6 @@
 /*
 
-
+   DCCxx ESP32 WIFI RAILCOM
 
    Ce programme permet la réalisation d'une station de commande DCC qui génère le cutout nécessaire pour la détection RailCom
 
@@ -13,8 +13,7 @@
 
    Il a été écrit sur la base de classes C++ pour pouvoir intégrer facilement les évolutions futures : commandes de fonctions, réglages et lecture de CVs...
 
-   Il a été conçu pour recevoir des commandes extérieures. Pour l'instant sur le seul port série, mais à l'avenir en Ethernet et en WiFi.
-   A ce stade, c'est principalement un programme de test en particulier pour tester le retour d'information RailCom
+   Il a été conçu pour recevoir des commandes extérieures sur le port série, mais aussi en WiFi.
 
   Pour assurer une compatibilité maximale avec les différents systèmes de commande déjà existants, le protocole de messagerie adopté est celui de DCC++.
   ce qui permet le pilotage avec JMRI par exemple (Testé).
@@ -36,14 +35,14 @@
   Pour plus d'informations sur le protocole de messagerie de DCC++ : https://github.com/DccPlusPlus/BaseStation/blob/master/DCC%2B%2B%20Arduino%20Sketch.pdf
 
   Cette station n'a pour l'instant été testée qu'avec la carte moteur LMD18200 et adopte le brochage de DCC++ pour la voie principale (main)
-  Par défaut dans ce programme, le brochage est celui correspondant à l'Arduino MEGA à savoir :
+  Par défaut dans ce programme, le brochage est :
 
   #define PIN_PWM       GPIO_NUM_12   // ENABLE (PWM)
   #define PIN_DIR       GPIO_NUM_13   // SIGNAL (DIR)
   #define PIN_BRAKE     GPIO_NUM_14   // CUTOUT (BRAKE)
 
-  Pour Arduino Uno en particulier, se reporter ici : https://www.locoduino.org/spip.php?article187
-
+  La centrale dispose de fonctions permettant la coupure automatique d'alimentation en cas de court-circuit ou de sur tension en plaçant un détecteur de consommation
+  de courant (MAX471, INA169, GY-169...) sur la pin GPIO_NUM_36
 ****************************************************************************************************************************************
   ATTENTION à parametrer le protection de courant à une valeur correspondant à votre configuration
   #define CURRENT_SAMPLE_MAX 3200 // 2,7 V étant une valeur raisonnable à ne pas dépasser
@@ -55,8 +54,6 @@
 
 */
 
-#define VERSION "v 0.9"
-#define PROJECT "DCCxx ESP32 WIFI"
 
 #include "DCC.h"
 #include "Config.h"
@@ -65,17 +62,20 @@
 // Mesure de courant
 char msg[] = "<p2>";
 CurrentMonitor mainMonitor(CURRENT_MONITOR_PIN_MAIN, msg); // create monitor for current on Main Track
+
 void Task0(void *pvParameters);
 const uint32_t stackSize = 20000;
 
 #if COMM_INTERFACE == 0
 HardwareSerial *CLIENT = &Serial;
 #elif COMM_INTERFACE == 1
-WiFiServer SERVER(2560); // Create and instance of an WiFiServer
+WiFiServer SERVER(PORT); // Create and instance of an WiFiServer
 WiFiClient *CLIENT = nullptr;
 #endif
 
-DCC dcc;
+DCC dcc;                // Create instance of DCC
+
+void comm(INTERFACE *);
 
 void setup()
 {
@@ -103,7 +103,7 @@ void setup()
   // Serial.println();
 
 #if COMM_INTERFACE == 1
-  IPAddress local_IP(192, 168, 1, 200);
+  IPAddress local_IP(LOCAL_IP);
   IPAddress gateway(192, 168, 1, 1);
   IPAddress subnet(255, 255, 255, 0);
   if (!WiFi.config(local_IP, gateway, subnet))
@@ -140,33 +140,40 @@ void setup()
 
 void Task0(void *parameter)
 {
-  long compt = 0;
   for (;;)
   {
-    if (CLIENT != nullptr)
-    {
-      mainMonitor.check(CLIENT);
-      if (compt == 1000ul)
-      {
-        CLIENT->printf("<a %d>", (int)(mainMonitor.current() / 4));
-        compt = 0;
-      }
-      delay(1);
-      compt++;
-    }
+    mainMonitor.check();
+    delay(1);
   }
   vTaskDelete(NULL);
 }
 
+char c;
+char commandString[16];
+
+
 void loop()
 {
-  char c;
-  char commandString[16];
-
 #if COMM_INTERFACE == 0
-  while (Serial.available() > 0)
+  CLIENT = &Serial;
+  comm(CLIENT);
+#elif COMM_INTERFACE == 1
+  WiFiClient client = SERVER.available();
+  if (client)
   {
-    c = Serial.read();
+    CLIENT = &client;
+    while (CLIENT->connected())
+      comm(CLIENT);
+  }
+#endif
+  delay(1);
+}
+
+void comm(INTERFACE *client)
+{
+  if (CLIENT->available())
+  {
+    c = CLIENT->read();
     switch (c)
     {
     case '<':
@@ -174,39 +181,20 @@ void loop()
       break;
     case '>':
       Serial.println(commandString);
-      dcc.parse(commandString, &Serial);
+      dcc.parse(commandString, CLIENT);
       break;
     default:
-      // sprintf(commandString, "%s%c", commandString, c);
       sprintf(commandString, "%s%c", commandString, c);
     }
-  } // while
-
-#elif COMM_INTERFACE == 1
-  WiFiClient client = SERVER.available();
-  if (client)
-  {
-    CLIENT = &client;
-    while (CLIENT->connected())
-    { // loop while the client's connected
-      if (CLIENT->available())
-      { // while there is data on the network
-        c = CLIENT->read();
-        switch (c)
-        {
-        case '<':
-          strcpy(commandString, "\0");
-          break;
-        case '>':
-          Serial.println(commandString);
-          dcc.parse(commandString, CLIENT);
-          break;
-        default:
-          sprintf(commandString, "%s%c", commandString, c);
-        }
-      }
-    } // while
   }
+  mainMonitor.over(CLIENT);
+#if PRINT_CURRENT
+  static uint16_t compt = 0;
+  if (compt == 1000ul)
+  {
+    CLIENT->printf("<a %d>", (int)(mainMonitor.current() / 4));
+    compt = 0;
+  }
+  compt++;
 #endif
-  delay(1);
 }
