@@ -12,7 +12,6 @@ Part of DCC++ BASE STATION for the Arduino
 #define CURRENTMONITOR_H
 
 #include "Arduino.h"
-#include <WiFi.h>
 #include "Config.h"
 
 #define CURRENT_SAMPLE_SMOOTHING 0.01
@@ -21,13 +20,12 @@ Part of DCC++ BASE STATION for the Arduino
 
 struct CurrentMonitor
 {
-  static long int sampleTime;
   int m_pin;
   float m_current;
   char *m_msg;
   CurrentMonitor(int, char *);
-  static boolean checkTime();
-  void check(INTERFACE*);
+  void check();
+  void over(INTERFACE*);
   void setup(INTERFACE*);
   float current();
 };
