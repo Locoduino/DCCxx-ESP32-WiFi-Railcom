@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define VERSION "v 1.1"
+#define PROJECT "DCCxx ESP32 WIFI RAILCOM"
 
 #define PIN_PWM       GPIO_NUM_12   // ENABLE (PWM)
 #define PIN_DIR       GPIO_NUM_13   // SIGNAL (DIR)
@@ -9,8 +11,8 @@
 #define CURRENT_MONITOR_PIN_MAIN    GPIO_NUM_36
 
 
-#define WIFI_SSID              "xxxxxxxxx"
-#define WIFI_PSW               "xxxxxxxxx"
+#define WIFI_SSID              "Freebox-5C00B0"
+#define WIFI_PSW               "relat@@-apiarius3-evitandam#-resolvatis9"
 
 
 // DEFINE COMMUNICATIONS INTERFACE
@@ -22,8 +24,14 @@
   #define INTERFACE HardwareSerial
 #elif COMM_INTERFACE == 1
   #include <WiFi.h>
-  #define INTERFACE WiFiClient
+  #define INTERFACE   WiFiClient
+  #define LOCAL_IP    192,168,1,200
+  #define PORT        2560
 #endif 
+
+#define PRINT_CURRENT 0   // PRINT_CURRENT 1 : Permet le retour de la consommation de courant lue toute les secondes
+                          // selon le protocole DCC++ <a xxx> . La valeur est rapportée sur une échelle de 0 à 1024
+                          // pour être compatible avec les centrales comme JMRI
 
 #define DCC_CUT_0 0 // Les deux états de l'automate cutout
 #define DCC_CUT_1 1
