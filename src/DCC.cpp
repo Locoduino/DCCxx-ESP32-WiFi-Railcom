@@ -391,8 +391,32 @@ void DCC::parse(char *com, INTERFACE *client)
     DCC::setFunction(locoAddr, fByte, eByte);
     break;
 
-  case 'S':
-    client->print("<p0>");
+  case 's':
+
+    if (digitalRead(PIN_PWM) == LOW)
+      client->print("<p0>");
+    else
+      client->print("<p1>");
+
+    client->print("<iDCCxx BASE STATION FOR ESP32 ");
+    client->print(VERSION);
+    client->print(" / ");
+    client->print(__DATE__);
+    client->print(" ");
+    client->print(__TIME__);
+    client->print(">");
+
+    client->print("<N");
+    if (COMM_INTERFACE == 0)
+      client->print("Serial>");
+    else
+    {
+      client->print("WiFi");
+      client->print(": ");
+      //client->print(WiFi.localIP());
+      client->print(">");
+    }
+
     break;
 
   default:
