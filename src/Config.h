@@ -1,37 +1,35 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VERSION "v 1.1"
+#define VERSION "v 1.2"
 #define PROJECT "DCCxx ESP32 WIFI RAILCOM"
 
-#define PIN_PWM       GPIO_NUM_12   // ENABLE (PWM)
-#define PIN_DIR       GPIO_NUM_13   // SIGNAL (DIR)
-#define PIN_BRAKE     GPIO_NUM_14   // CUTOUT (BRAKE)
+#define PIN_PWM GPIO_NUM_12   // ENABLE (PWM)
+#define PIN_DIR GPIO_NUM_13   // SIGNAL (DIR)
+#define PIN_BRAKE GPIO_NUM_14 // CUTOUT (BRAKE)
 
-#define CURRENT_MONITOR_PIN_MAIN    GPIO_NUM_36
+#define CURRENT_MONITOR_PIN_MAIN GPIO_NUM_36
 
-
-#define WIFI_SSID              "Freebox-5C00B0"
-#define WIFI_PSW               "relat@@-apiarius3-evitandam#-resolvatis9"
-
+#define WIFI_SSID "xxxxxxxxxx"
+#define WIFI_PSW "xxxxxxxxxx"
 
 // DEFINE COMMUNICATIONS INTERFACE
 //  0 = Serial Port
 //  1 = Wifi
-#define COMM_INTERFACE   0
+#define COMM_INTERFACE 0
 
 #if COMM_INTERFACE == 0
-  #define INTERFACE HardwareSerial
+#define INTERFACE HardwareSerial
 #elif COMM_INTERFACE == 1
-  #include <WiFi.h>
-  #define INTERFACE   WiFiClient
-  #define LOCAL_IP    192,168,1,200
-  #define PORT        2560
-#endif 
+#include <WiFi.h>
+#define INTERFACE WiFiClient
+#define LOCAL_IP 192, 168, 1, 200
+#define PORT 2560
+#endif
 
-#define PRINT_CURRENT 0   // PRINT_CURRENT 1 : Permet le retour de la consommation de courant lue toute les secondes
-                          // selon le protocole DCC++ <a xxx> . La valeur est rapportée sur une échelle de 0 à 1024
-                          // pour être compatible avec les centrales comme JMRI
+#define PRINT_CURRENT 0 // PRINT_CURRENT 1 : Permet le retour de la consommation de courant lue toute les secondes
+                        // selon le protocole DCC++ <a xxx> . La valeur est rapportée sur une échelle de 0 à 1024
+                        // pour être compatible avec les centrales comme JMRI
 
 #define DCC_CUT_0 0 // Les deux états de l'automate cutout
 #define DCC_CUT_1 1
@@ -70,6 +68,5 @@
 #define DCC_PACKET_TYPE_STEP_27 0x10
 #define DCC_PACKET_TYPE_STEP_28 0x20
 #define DCC_PACKET_TYPE_STEP_128 0x30
-
 
 #endif
