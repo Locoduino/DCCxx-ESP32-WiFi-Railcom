@@ -40,6 +40,6 @@ void CurrentMonitor::check()
 {
   m_current = analogRead(m_pin) * CURRENT_SAMPLE_SMOOTHING + m_current * (1.0 - CURRENT_SAMPLE_SMOOTHING); // compute new exponentially-smoothed current
   if (m_current > CURRENT_SAMPLE_MAX)
-  // current overload and Prog Signal is on (or could have checked Main Signal, since both are always on or off together)
+    // current overload and Prog Signal is on (or could have checked Main Signal, since both are always on or off together)
     digitalWrite(PIN_PWM, LOW);
 } // CurrentMonitor::check
