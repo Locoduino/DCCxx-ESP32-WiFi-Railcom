@@ -25,8 +25,8 @@ struct CurrentMonitor
   char *m_msg;
   CurrentMonitor(int, char *);
   void check();
-  void over(INTERFACE*);
-  void setup(INTERFACE*);
+  void over(INTERFACE *);
+  void setup(INTERFACE *);
   float current();
 };
 
