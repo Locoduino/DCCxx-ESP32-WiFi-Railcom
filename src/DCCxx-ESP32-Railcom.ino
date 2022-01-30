@@ -54,7 +54,6 @@
 
 */
 
-
 #include "DCC.h"
 #include "Config.h"
 #include "CurrentMonitor.h"
@@ -73,7 +72,7 @@ WiFiServer SERVER(PORT); // Create and instance of an WiFiServer
 WiFiClient *CLIENT = nullptr;
 #endif
 
-DCC dcc;                // Create instance of DCC
+DCC dcc; // Create instance of DCC
 
 void comm(INTERFACE *);
 
@@ -86,21 +85,6 @@ void setup()
   Serial.printf("\nVersion   :      %s\n", VERSION);
   Serial.printf("\nFichier   :      %s\n", __FILE__);
   Serial.printf("\nCompiled  :      %s - %s \n\n", __DATE__, __TIME__);
-
-  // Infos ESP32
-  // esp_chip_info_t out_info;
-  // esp_chip_info(&out_info);
-  // Serial.print("getSketchSize : "); Serial.println(String(ESP.getSketchSize() / 1000) + " Ko");
-  // Serial.print("getFreeSketchSpace : "); Serial.println(String(ESP.getFreeSketchSpace() / 1000) + " Ko");
-  // Serial.print("CPU freq : "); Serial.println(String(ESP.getCpuFreqMHz()) + " MHz");
-  // Serial.print("CPU cores : ");  Serial.println(String(out_info.cores));
-  // Serial.print("Flash size : "); Serial.println(String(ESP.getFlashChipSize() / 1000000) + " MB");
-  // Serial.print("Free RAM : "); Serial.println(String((long)ESP.getFreeHeap()) + " bytes");
-  // //Serial.print("Min. free seen : "); Serial.println(String((long)esp_get_minimum_free_heap_size()) + " bytes");
-  // Serial.print("tskIDLE_PRIORITY : "); Serial.println(String((long)tskIDLE_PRIORITY));
-  // Serial.print("configMAX_PRIORITIES : "); Serial.println(String((long)configMAX_PRIORITIES));
-  // Serial.print("configTICK_RATE_HZ : "); Serial.println(String(configTICK_RATE_HZ) + " Hz");
-  // Serial.println();
 
 #if COMM_INTERFACE == 1
   IPAddress local_IP(LOCAL_IP);
@@ -150,7 +134,6 @@ void Task0(void *parameter)
 
 char c;
 char commandString[16];
-
 
 void loop()
 {
