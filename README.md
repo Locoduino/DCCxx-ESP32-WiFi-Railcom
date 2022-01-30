@@ -1,6 +1,6 @@
 # DCCxx-ESP32-Railcom
 
-Ce programme permet la réalisation d'une station de commande DCC qui génère le cutout nécessaire pour la détection RailCom
+Ce programme permet la réalisation d'une station de commande DCC en WiFi qui génère le cutout nécessaire pour la détection RailCom
 
    *******************************************************
    IL NE FONCTIONNE QUE SUR UN ENVIRONNEMENT ESP32
