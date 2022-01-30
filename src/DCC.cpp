@@ -140,7 +140,7 @@ void DCC::setup()
   ptrToClass = this;
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, timerHandler, true);
-  timerAlarmWrite(timer, 1000000, true);
+  timerAlarmWrite(timer, 28, true);
   timerAlarmEnable(timer);
 }
 
@@ -392,6 +392,7 @@ void DCC::parse(char *com, INTERFACE *client)
     break;
 
   case 's':
+  case '#':
 
     if (digitalRead(PIN_PWM) == LOW)
       client->print("<p0>");
@@ -413,7 +414,7 @@ void DCC::parse(char *com, INTERFACE *client)
     {
       client->print("WiFi");
       client->print(": ");
-      //client->print(WiFi.localIP());
+      // client->print(WiFi.localIP());
       client->print(">");
     }
 
