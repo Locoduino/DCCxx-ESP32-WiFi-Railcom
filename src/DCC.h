@@ -30,7 +30,7 @@ private:
 
 public:
   DCC() {}
-  hw_timer_t *timer = nullptr;
+  hw_timer_t *timer { nullptr };
   void IRAM_ATTR onTime(void);
   void setup();
   void packetFormat(byte, uint16_t, uint16_t, uint16_t);
