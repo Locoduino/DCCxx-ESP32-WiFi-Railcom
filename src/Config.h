@@ -24,11 +24,8 @@
 #define INTERFACE       WiFiClient
 
 //------ If WiFi, replace with your network credentials -----
-//#define WIFI_SSID              "REPLACE_WITH_YOUR_SSID"
-//#define WIFI_PSW               "REPLACE_WITH_YOUR_PASSWORD"
-#define WIFI_SSID              "Livebox-72E0"
-#define WIFI_PSW               "aeyaDzhmCrRU2RSFzD"
-
+#define WIFI_SSID      "REPLACE_WITH_YOUR_SSID"
+#define WIFI_PSW       "REPLACE_WITH_YOUR_PASSWORD"
 #define LOCAL_IP        192,168,1,200
 #define LOCAL_GATEWAY   192,168,1,1
 #define SUBNET          255,255,255,0
