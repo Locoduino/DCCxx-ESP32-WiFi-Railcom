@@ -47,11 +47,11 @@
   #define CURRENT_SAMPLE_MAX 3200 // 2,7 V étant une valeur raisonnable à ne pas dépasser
 ****************************************************************************************************************************************
 
-        Chritophe Bobille / LOCODUINO (http://www.locoduino.org) janv 2022 © locoduino 2022
+        Chritophe Bobille / LOCODUINO (http://www.locoduino.org) janv 2022 © locoduino 2022 - christophe.bobille@gmail.com
         Original description from DCC++ BASE STATION a C++ program written by Gregg E. Berman GNU General Public License.
         Original description from Pascal Barlier GNU General Public License
 
-        v 1.4 sept 2022
+        v 1.5 oct 2022
 
 */
 
@@ -108,8 +108,8 @@ void setup()
 
 #if COMM_INTERFACE == 1
   IPAddress local_IP(LOCAL_IP);
-  IPAddress gateway(192, 168, 1, 1);
-  IPAddress subnet(255, 255, 255, 0);
+  IPAddress gateway(LOCAL_GATEWAY);
+  IPAddress subnet(SUBNET);
   if (!WiFi.config(local_IP, gateway, subnet))
     Serial.println("STA Failed to configure");
   WiFi.begin(WIFI_SSID, WIFI_PSW);
