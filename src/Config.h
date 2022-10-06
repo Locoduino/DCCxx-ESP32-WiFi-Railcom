@@ -3,7 +3,7 @@
 
 
 #define VERSION "v 1.5"
-#define PROJECT "DCCxx ESP32 WIFI"
+#define PROJECT "DCCxx ESP32 WIFI - RAILCOM"
 
 #define PIN_PWM       GPIO_NUM_12   // ENABLE (PWM)
 #define PIN_DIR       GPIO_NUM_13   // SIGNAL (DIR)
@@ -24,8 +24,11 @@
 #define INTERFACE       WiFiClient
 
 //------ If WiFi, replace with your network credentials -----
-#define WIFI_SSID       "REPLACE_WITH_YOUR_SSID"
-#define WIFI_PSW        "REPLACE_WITH_YOUR_PASSWORD"
+//#define WIFI_SSID              "REPLACE_WITH_YOUR_SSID"
+//#define WIFI_PSW               "REPLACE_WITH_YOUR_PASSWORD"
+#define WIFI_SSID              "Livebox-72E0"
+#define WIFI_PSW               "aeyaDzhmCrRU2RSFzD"
+
 #define LOCAL_IP        192,168,1,200
 #define LOCAL_GATEWAY   192,168,1,1
 #define SUBNET          255,255,255,0
