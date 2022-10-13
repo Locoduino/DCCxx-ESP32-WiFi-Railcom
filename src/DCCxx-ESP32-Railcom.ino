@@ -47,7 +47,7 @@
   #define CURRENT_SAMPLE_MAX 3200 // 2,7 V étant une valeur raisonnable à ne pas dépasser
 ****************************************************************************************************************************************
 
-        Chritophe Bobille / LOCODUINO (http://www.locoduino.org) janv 2022 © locoduino 2022 - christophe.bobille@gmail.com
+        Christophe Bobille / LOCODUINO (http://www.locoduino.org) janv 2022 © locoduino 2022 - christophe.bobille@gmail.com
         Original description from DCC++ BASE STATION a C++ program written by Gregg E. Berman GNU General Public License.
         Original description from Pascal Barlier GNU General Public License
 
