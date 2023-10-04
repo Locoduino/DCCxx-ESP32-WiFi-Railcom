@@ -35,10 +35,13 @@ public:
   void setup();
   void packetFormat(byte, uint16_t, uint16_t, uint16_t);
   void setThrottle(uint16_t, uint8_t, uint8_t);
+  void emergency();
   void setFunction(uint16_t, byte, byte);
   void clear();
   void reset();
   void dccAdd(byte *, byte, byte);
+  void SetCV(uint8_t, uint16_t, uint8_t);
+  void DCCFormat(uint8_t, uint8_t, uint16_t, uint16_t);
   void dumpPackets();
   void interrupt(void);
   void parse(char *, INTERFACE *);
