@@ -19,114 +19,114 @@ void IRAM_ATTR DCC::onTime()
     m_dccCount++;
     switch (m_cut)
     {
-      case DCC_CUT_0:
-        switch (m_subBit) // Automate bit
+    case DCC_CUT_0:
+      switch (m_subBit) // Automate bit
+      {
+      case DCC_BIT_HIGH:
+        switch (m_dataMode) // Automate paquet
         {
-          case DCC_BIT_HIGH:
-            switch (m_dataMode) // Automate paquet
+        case DCC_PACKET_IDLE:
+          if (m_packetUsed)
+          {
+            m_dataMode = DCC_PACKET_HEADER;
+            m_headerCount = DCC_HEADER_SIZE;
+          }
+          break;
+        case DCC_PACKET_HEADER:
+          m_bit = 1;
+          if (!--m_headerCount)
+          {
+            m_dataMode = DCC_PACKET_START;
+            m_byteCount = 0;
+          }
+          break;
+        case DCC_PACKET_START:
+          m_bit = 0;
+          m_bitShift = 0x80;
+          m_dataMode = DCC_PACKET_BYTE;
+          break;
+        case DCC_PACKET_BYTE:
+          m_bit = !!(m_packetData[m_packetIndex][m_byteCount] & m_bitShift);
+          m_bitShift >>= 1;
+          if (!m_bitShift)
+          {
+            if (m_packetSize[m_packetIndex] == ++m_byteCount) // Fin du paquet
+              m_dataMode = DCC_PACKET_STOP;
+            else
+              m_dataMode = DCC_PACKET_START;
+          }
+          break;
+        case DCC_PACKET_STOP:
+          m_bit = 1;
+          if (m_packetType[m_packetIndex] & DCC_PACKET_TYPE_CV) // Les paquets de programmation sont effacés après envoi
+          {
+            m_packetSize[m_packetIndex] = 0;
+            m_packetUsed--; // Suppression du paquet envoyé
+          }
+          if (m_packetUsed)
+          {
+            for (char i = DCC_PACKET_NUM; --i >= 0;)
             {
-              case DCC_PACKET_IDLE:
-                if (m_packetUsed)
-                {
-                  m_dataMode = DCC_PACKET_HEADER;
-                  m_headerCount = DCC_HEADER_SIZE;
-                }
-                break;
-              case DCC_PACKET_HEADER:
-                m_bit = 1;
-                if (!--m_headerCount)
-                {
-                  m_dataMode = DCC_PACKET_START;
-                  m_byteCount = 0;
-                }
-                break;
-              case DCC_PACKET_START:
-                m_bit = 0;
-                m_bitShift = 0x80;
-                m_dataMode = DCC_PACKET_BYTE;
-                break;
-              case DCC_PACKET_BYTE:
-                m_bit = !!(m_packetData[m_packetIndex][m_byteCount] & m_bitShift);
-                m_bitShift >>= 1;
-                if (!m_bitShift)
-                {
-                  if (m_packetSize[m_packetIndex] == ++m_byteCount) // Fin du paquet
-                    m_dataMode = DCC_PACKET_STOP;
-                  else
-                    m_dataMode = DCC_PACKET_START;
-                }
-                break;
-              case DCC_PACKET_STOP:
-                m_bit = 1;
-                if (m_packetType[m_packetIndex] & DCC_PACKET_TYPE_CV) // Les paquets de programmation sont effacés après envoi
-                {
-                  m_packetSize[m_packetIndex] = 0;
-                  m_packetUsed--; // Suppression du paquet envoyé
-                }
-                if (m_packetUsed)
-                {
-                  for (char i = DCC_PACKET_NUM; --i >= 0;)
-                  {
-                    m_packetIndex++;
-                    if (m_packetIndex == DCC_PACKET_NUM)
-                      m_packetIndex = 0;
-                    if (m_packetSize[m_packetIndex])
-                      break;
-                  }
-                  m_dataMode = DCC_PACKET_END;
-                  m_cutoutCount = DCC_CUTOUT_SIZE;
-                }
-                else
-                {
-                  m_dataMode = DCC_PACKET_IDLE;
-                }
-                break;
-              case DCC_PACKET_END:
-                m_dataMode = DCC_PACKET_CUTOUT;
-                m_cutoutCount = DCC_CUTOUT_SIZE;
+              m_packetIndex++;
+              if (m_packetIndex == DCC_PACKET_NUM)
+                m_packetIndex = 0;
+              if (m_packetSize[m_packetIndex])
                 break;
             }
-            digitalWrite(PIN_DIR, HIGH);
-            if (m_bit)
-              m_subBit = DCC_BIT_LOW;
-            else
-              m_subBit = DCC_BIT_HIGH0;
-            break;
-          case DCC_BIT_HIGH0:
-            digitalWrite(PIN_DIR, HIGH);
-            m_subBit = DCC_BIT_LOW;
-            break;
-          case DCC_BIT_LOW:
-            digitalWrite(PIN_DIR, LOW);
-            if (m_bit)
-              m_subBit = DCC_BIT_HIGH;
-            else
-              m_subBit = DCC_BIT_LOW0;
-            break;
-          case DCC_BIT_LOW0:
-            digitalWrite(PIN_DIR, LOW);
-            m_subBit = DCC_BIT_HIGH;
-            break;
+            m_dataMode = DCC_PACKET_END;
+            m_cutoutCount = DCC_CUTOUT_SIZE;
+          }
+          else
+          {
+            m_dataMode = DCC_PACKET_IDLE;
+          }
+          break;
+        case DCC_PACKET_END:
+          m_dataMode = DCC_PACKET_CUTOUT;
+          m_cutoutCount = DCC_CUTOUT_SIZE;
+          break;
         }
-        m_cut = DCC_CUT_1;
+        digitalWrite(PIN_DIR, HIGH);
+        if (m_bit)
+          m_subBit = DCC_BIT_LOW;
+        else
+          m_subBit = DCC_BIT_HIGH0;
         break;
-      case DCC_CUT_1: // 1/2 bit : zone de coupure
-        switch (m_dataMode)
+      case DCC_BIT_HIGH0:
+        digitalWrite(PIN_DIR, HIGH);
+        m_subBit = DCC_BIT_LOW;
+        break;
+      case DCC_BIT_LOW:
+        digitalWrite(PIN_DIR, LOW);
+        if (m_bit)
+          m_subBit = DCC_BIT_HIGH;
+        else
+          m_subBit = DCC_BIT_LOW0;
+        break;
+      case DCC_BIT_LOW0:
+        digitalWrite(PIN_DIR, LOW);
+        m_subBit = DCC_BIT_HIGH;
+        break;
+      }
+      m_cut = DCC_CUT_1;
+      break;
+    case DCC_CUT_1: // 1/2 bit : zone de coupure
+      switch (m_dataMode)
+      {
+      case DCC_PACKET_CUTOUT:
+        if (!--m_cutoutCount)
         {
-          case DCC_PACKET_CUTOUT:
-            if (!--m_cutoutCount)
-            {
-              m_dataMode = DCC_PACKET_HEADER;
-              m_headerCount = DCC_HEADER_SIZE;
-              digitalWrite(PIN_BRAKE, LOW);
-            }
-            else
-              digitalWrite(PIN_BRAKE, HIGH);
-            break;
-          default:
-            m_cut = DCC_CUT_0;
+          m_dataMode = DCC_PACKET_HEADER;
+          m_headerCount = DCC_HEADER_SIZE;
+          digitalWrite(PIN_BRAKE, LOW);
         }
+        else
+          digitalWrite(PIN_BRAKE, HIGH);
         break;
+      default:
+        m_cut = DCC_CUT_0;
+      }
+      break;
     }
   }
   portEXIT_CRITICAL_ISR(&timerMux);
@@ -150,8 +150,7 @@ void DCC::setup()
 void DCC::reset()
 {
   // Envoie une séquence de réinitialisation générale des décodeurs
-  byte i;
-  for (i = 0; i < 5; i++)
+  for (byte i = 0; i < 5; i++)
     packetFormat(DCC_PACKET_TYPE_RESET, 0xFF, 0, 0);
 } // DCC::reset
 
@@ -169,40 +168,45 @@ void DCC::setThrottle(uint16_t locoAddr, uint8_t locoSpeed, uint8_t locoDir)
   // Serial.print("data : "); Serial.println(data, BIN);
 } // DCC::setThrottle
 
+void DCC::emergency()
+{
+  byte type = DCC_PACKET_TYPE_SPEED | DCC_PACKET_TYPE_STEP_128;
+  packetFormat(type, 0, 1, 0);
+} // DCC::emergency
+
 void DCC::setFunction(uint16_t locoAddr, byte fByte, byte eByte)
 {
   byte type = 0;
   uint16_t data = 0;
 
-  //
   //      B100xxxxx => DCC_PACKET_TYPE_F0_F4
   //      B1011xxxx => DCC_PACKET_TYPE_F5_F8
   //      B1010xxxx => DCC_PACKET_TYPE_F9_F12
 
   switch (fByte >> 5)
   {
-    case (B100):
-      type = DCC_PACKET_TYPE_F0_F4;
-      data = (fByte & 0x1F);
+  case (B100):
+    type = DCC_PACKET_TYPE_F0_F4;
+    data = (fByte & 0x1F);
+    break;
+  case (B101):
+    switch (fByte >> 4)
+    {
+    case (B1011):
+      type = DCC_PACKET_TYPE_F5_F8;
+      data = (fByte & 0xF);
       break;
-    case (B101):
-      switch (fByte >> 4)
-      {
-        case (B1011):
-          type = DCC_PACKET_TYPE_F5_F8;
-          data = (fByte & 0xF);
-          break;
-        case (B1010):
-          type = DCC_PACKET_TYPE_F9_F12;
-          data = (fByte & 0xF);
-          break;
-      }
+    case (B1010):
+      type = DCC_PACKET_TYPE_F9_F12;
+      data = (fByte & 0xF);
       break;
+    }
+    break;
   }
   if (locoAddr > 127)
     type |= DCC_PACKET_TYPE_ADDR_LONG;
   packetFormat(type, locoAddr, data, 0);
-} //DCC::setFunction
+} // DCC::setFunction
 
 void DCC::packetFormat(byte type, uint16_t addr, uint16_t data1, uint16_t data2)
 {
@@ -231,57 +235,57 @@ void DCC::packetFormat(byte type, uint16_t addr, uint16_t data1, uint16_t data2)
   }
   switch (type & DCC_PACKET_TYPE_MODE)
   {
-    case DCC_PACKET_TYPE_SPEED:
-      dir = !!(data1 & 0x100);
-      switch (type & DCC_PACKET_TYPE_STEP)
-      {
-        case DCC_PACKET_TYPE_STEP_14:
-          checksum ^= *packetPtr++ = (data1 & 0xF) | (dir ? 0x60 : 0x20);
-          packetSize++;
-          break;
-        case DCC_PACKET_TYPE_STEP_27:
-        case DCC_PACKET_TYPE_STEP_28:
-          ext = (data1 & 1) << 4;
-          data1 >>= 1;
-          checksum ^= *packetPtr++ = (data1 & 0xF) | (dir ? 0x60 : 0x20) | ext;
-          packetSize++;
-          break;
-        case DCC_PACKET_TYPE_STEP_128:
-          checksum ^= *packetPtr++ = 0x3F;
-          checksum ^= *packetPtr++ = (data1 & 0x7F) | (dir ? 0x80 : 0);
-          packetSize += 2;
-          break;
-      }
-      break;
-    case DCC_PACKET_TYPE_F0_F4:
-      checksum ^= *packetPtr++ = 0x80 | (data1 & 0x1F);
+  case DCC_PACKET_TYPE_SPEED:
+    dir = !!(data1 & 0x100);
+    switch (type & DCC_PACKET_TYPE_STEP)
+    {
+    case DCC_PACKET_TYPE_STEP_14:
+      checksum ^= *packetPtr++ = (data1 & 0xF) | (dir ? 0x60 : 0x20);
       packetSize++;
       break;
-    case DCC_PACKET_TYPE_F5_F8:
-      checksum ^= *packetPtr++ = 0xB0 | (data1 & 0xF);
+    case DCC_PACKET_TYPE_STEP_27:
+    case DCC_PACKET_TYPE_STEP_28:
+      ext = (data1 & 1) << 4;
+      data1 >>= 1;
+      checksum ^= *packetPtr++ = (data1 & 0xF) | (dir ? 0x60 : 0x20) | ext;
       packetSize++;
       break;
-    case DCC_PACKET_TYPE_F9_F12:
-      checksum ^= *packetPtr++ = 0xA0 | (data1 & 0xF);
-      packetSize++;
-      break;
-    case DCC_PACKET_TYPE_CV: // data1 = Numéro de la variable ; data2 = Valeur
-      checksum ^= *packetPtr++ = ((data1 >> 8) & 3) | 0x7C;
-      checksum ^= *packetPtr++ = data1 & 0xFF;
-      checksum ^= *packetPtr++ = data2 & 0xFF;
-      packetSize += 3;
-      break;
-    case DCC_PACKET_TYPE_CV_BIT: // data1 = Numéro de la variable ; data2 = masque + bit
-      checksum ^= *packetPtr++ = ((data1 >> 8) & 3) | 0x78;
-      checksum ^= *packetPtr++ = data1 & 0xFF;
-      checksum ^= *packetPtr++ = 0xF0 | data2;
-      packetSize += 3;
-      break;
-    case DCC_PACKET_TYPE_RESET:
-      checksum ^= *packetPtr++ = 0;
-      checksum ^= *packetPtr++ = 0;
+    case DCC_PACKET_TYPE_STEP_128:
+      checksum ^= *packetPtr++ = 0x3F;
+      checksum ^= *packetPtr++ = (data1 & 0x7F) | (dir ? 0x80 : 0);
       packetSize += 2;
       break;
+    }
+    break;
+  case DCC_PACKET_TYPE_F0_F4:
+    checksum ^= *packetPtr++ = 0x80 | (data1 & 0x1F);
+    packetSize++;
+    break;
+  case DCC_PACKET_TYPE_F5_F8:
+    checksum ^= *packetPtr++ = 0xB0 | (data1 & 0xF);
+    packetSize++;
+    break;
+  case DCC_PACKET_TYPE_F9_F12:
+    checksum ^= *packetPtr++ = 0xA0 | (data1 & 0xF);
+    packetSize++;
+    break;
+  case DCC_PACKET_TYPE_CV: // data1 = Numéro de la variable ; data2 = Valeur
+    checksum ^= *packetPtr++ = ((data1 >> 8) & 3) | 0x7C;
+    checksum ^= *packetPtr++ = data1 & 0xFF;
+    checksum ^= *packetPtr++ = data2 & 0xFF;
+    packetSize += 3;
+    break;
+  case DCC_PACKET_TYPE_CV_BIT: // data1 = Numéro de la variable ; data2 = masque + bit
+    checksum ^= *packetPtr++ = ((data1 >> 8) & 3) | 0x78;
+    checksum ^= *packetPtr++ = data1 & 0xFF;
+    checksum ^= *packetPtr++ = 0xF0 | data2;
+    packetSize += 3;
+    break;
+  case DCC_PACKET_TYPE_RESET:
+    checksum ^= *packetPtr++ = 0;
+    checksum ^= *packetPtr++ = 0;
+    packetSize += 2;
+    break;
   }
   *packetPtr = checksum;
   dccAdd(packetData, packetSize, type & DCC_PACKET_TYPE_MODE); // TODO pour PILOT
@@ -310,6 +314,8 @@ void DCC::dccAdd(byte *packetData, byte packetSize, byte packetType)
   m_packetType[index] = packetType;
   m_packetSize[index] = packetSize;
 } // DCC::dccAdd
+
+
 
 void DCC::dumpPackets()
 { // DEBUG
@@ -370,59 +376,63 @@ void DCC::parse(char *com, INTERFACE *client)
   int locoDir = 0;
   switch (com[0])
   {
-    case '0':
-      digitalWrite(PIN_PWM, LOW);
-      client->printf("<p%c>", com[0]);
-      break;
+  case '0':
+    digitalWrite(PIN_PWM, LOW);
+    client->printf("<p%c>", com[0]);
+    break;
 
-    case '1':
-      digitalWrite(PIN_PWM, HIGH);
-      client->printf("<p%c>", com[0]);
-      break;
+  case '1':
+    digitalWrite(PIN_PWM, HIGH);
+    client->printf("<p%c>", com[0]);
+    break;
 
-    case 't': // <t REGISTER CAB SPEED DIRECTION>
-      sscanf(com + 1, "%d %d %d %d", &x, &a, &s, &d);
-      locoAddr = a;
-      locoSpeed = s;
-      locoDir = d;
-      DCC::setThrottle(locoAddr, locoSpeed, locoDir);
-      client->printf("<T %d %d %d>", x, s, d);
-      break;
+  case 't': // <t REGISTER CAB SPEED DIRECTION>
+    sscanf(com + 1, "%d %d %d %d", &x, &a, &s, &d);
+    locoAddr = a;
+    locoSpeed = s;
+    locoDir = d;
+    DCC::setThrottle(locoAddr, locoSpeed, locoDir);
+    client->printf("<T %d %d %d>", x, s, d);
+    break;
 
-    case 'f': // <f CAB BYTE1 [BYTE2]>
-      sscanf(com + 1, "%d %d %d", &locoAddr, &fByte, &eByte);
-      DCC::setFunction(locoAddr, fByte, eByte);
-      break;
+  case 'f': // <f CAB BYTE1 [BYTE2]>
+    sscanf(com + 1, "%d %d %d", &locoAddr, &fByte, &eByte);
+    DCC::setFunction(locoAddr, fByte, eByte);
+    break;
 
-    case 's':
+  case '!':                    // ESTOP ALL  <!>
+    DCC::emergency(); // this broadcasts speed 1(estop) and sets all reminders to speed 1.
+    break;
 
-      if (digitalRead(PIN_PWM) == LOW)
-        client->print("<p0>");
-      else
-        client->print("<p1>");
+  case 's':
 
-      client->print("<iDCCxx BASE STATION FOR ESP32 ");
-      client->print(VERSION);
-      client->print(" / ");
-      client->print(__DATE__);
-      client->print(" ");
-      client->print(__TIME__);
+    if (digitalRead(PIN_PWM) == LOW)
+      client->print("<p0>");
+    else
+      client->print("<p1>");
+
+    client->print("<iDCCxx BASE STATION FOR ESP32 ");
+    client->print(VERSION);
+    client->print(" / ");
+    client->print(__DATE__);
+    client->print(" ");
+    client->print(__TIME__);
+    client->print(">");
+
+    client->print("<N");
+    if (COMM_INTERFACE == 0)
+      client->print("Serial>");
+    else
+    {
+      client->print("WiFi");
+      client->print(": ");
+      // client->print(WiFi.localIP());
       client->print(">");
+    }
 
-      client->print("<N");
-      if (COMM_INTERFACE == 0)
-        client->print("Serial>");
-      else
-      {
-        client->print("WiFi");
-        client->print(": ");
-        //client->print(WiFi.localIP());
-        client->print(">");
-      }
+    break;
 
-      break;
-
-    default:
-      return;
+  default:
+    return;
   }
 } // DCC::parse
