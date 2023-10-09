@@ -2,11 +2,11 @@
 #define CONFIG_H
 
 #define PROJECT "DCCxx ESP32 WIFI - RAILCOM"
-#define VERSION "v 1.9"
+#define VERSION "v 2.0"
 
-#define PIN_PWM GPIO_NUM_12   // ENABLE (PWM)
-#define PIN_DIR GPIO_NUM_13   // SIGNAL (DIR)
-#define PIN_BRAKE GPIO_NUM_14 // CUTOUT (BRAKE)
+#define PIN_PWM GPIO_NUM_12                  // ENABLE (PWM)
+#define PIN_DIR GPIO_NUM_13                  // SIGNAL (DIR)
+#define PIN_BRAKE GPIO_NUM_14                // CUTOUT (BRAKE)
 #define CURRENT_MONITOR_PIN_MAIN GPIO_NUM_35 // Mesure de courant
 
 /*------------- Configure your own settings ---------------*/
@@ -22,8 +22,8 @@
 #define INTERFACE WiFiClient
 
 //------ If WiFi, replace with your network credentials -----
-#define WIFI_SSID              "yourssid"
-#define WIFI_PSW               "yourpassword"
+#define WIFI_SSID "REPLACE_WITH_YOUR_SSID"
+#define WIFI_PSW "REPLACE_WITH_YOUR_PASSWORD"
 #define LOCAL_IP 192, 168, 1, 200
 #define LOCAL_GATEWAY 192, 168, 1, 1
 #define SUBNET 255, 255, 255, 0
