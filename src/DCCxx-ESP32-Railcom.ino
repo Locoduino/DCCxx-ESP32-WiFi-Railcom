@@ -38,9 +38,10 @@
   Cette station n'a pour l'instant été testée qu'avec la carte moteur LMD18200 et adopte le brochage de DCC++ pour la voie principale (main)
   Par défaut dans ce programme, le brochage est :
 
-  #define PIN_PWM       GPIO_NUM_12   // ENABLE (PWM)
-  #define PIN_DIR       GPIO_NUM_13   // SIGNAL (DIR)
-  #define PIN_BRAKE     GPIO_NUM_14   // CUTOUT (BRAKE)
+  #define PIN_PWM       GPIO_NUM_12               // ENABLE (PWM)
+  #define PIN_DIR       GPIO_NUM_13               // SIGNAL (DIR)
+  #define PIN_BRAKE     GPIO_NUM_14               // CUTOUT (BRAKE)
+  #define CURRENT_MONITOR_PIN_MAIN  GPIO_NUM_35   // Mesure de courant
 
 ****************************************************************************************************************************************
   ATTENTION à parametrer le protection de courant à une valeur correspondant à votre configuration
