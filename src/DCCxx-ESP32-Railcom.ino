@@ -38,10 +38,9 @@
   Cette station n'a pour l'instant été testée qu'avec la carte moteur LMD18200 et adopte le brochage de DCC++ pour la voie principale (main)
   Par défaut dans ce programme, le brochage est :
 
-  #define PIN_PWM                   GPIO_NUM_12   // ENABLE (PWM)
-  #define PIN_DIR                   GPIO_NUM_13   // SIGNAL (DIR)
-  #define PIN_BRAKE                 GPIO_NUM_14   // CUTOUT (BRAKE)
-  #define CURRENT_MONITOR_PIN_MAIN  GPIO_NUM_35   // Mesure de courant
+  #define PIN_PWM       GPIO_NUM_12   // ENABLE (PWM)
+  #define PIN_DIR       GPIO_NUM_13   // SIGNAL (DIR)
+  #define PIN_BRAKE     GPIO_NUM_14   // CUTOUT (BRAKE)
 
 ****************************************************************************************************************************************
   ATTENTION à parametrer le protection de courant à une valeur correspondant à votre configuration
@@ -56,6 +55,7 @@
         v 1.7 janv 2023  : Inclus la réception de commandes de traction par le bus CAN
         v 1.8 - 15 mars 2023  : Ajout de eStop, fonction emergency()
         v 1.9 - 23 mars 2023  : Optimisation du code
+        v 2.0 - 09 oct 2023   : Correction bug sur pointeur CLIENT en TCP (WiFi)
 */
 
 #ifndef ARDUINO_ARCH_ESP32
@@ -67,7 +67,7 @@
 #include "CurrentMonitor.h"
 
 #ifdef CAN_INTERFACE
-#include <ACAN_ESP32.h>
+#include <ACAN_ESP32.h> // https://github.com/pierremolinaro/acan-esp32
 #endif
 
 // Mesure de courant
@@ -179,7 +179,7 @@ void setup()
       "Task2",
       2 * 1024,
       NULL,
-      1,
+      3,
       NULL,
       1); /* Core. */
 
@@ -266,8 +266,11 @@ void Task2(void *p)
 
   for (;;)
   {
-    mainMonitor.over(CLIENT);
-    CLIENT->printf("<a %d>", (int)(mainMonitor.current() / 4));
+    if (CLIENT != nullptr)
+    {
+      mainMonitor.over(CLIENT);
+      CLIENT->printf("<a %d>", (int)(mainMonitor.current() / 4));
+    }
     vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
   }
 }
