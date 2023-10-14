@@ -94,8 +94,14 @@ Le message CAN pour commander la central devra respecter les regles suivantes :
   Par défaut dans ce programme, le brochage est celui correspondant à l'Arduino MEGA à savoir :
 
   #define PIN_PWM       GPIO_NUM_12   // ENABLE (PWM)
+  
   #define PIN_DIR       GPIO_NUM_13   // SIGNAL (DIR)
+  
   #define PIN_BRAKE     GPIO_NUM_14   // CUTOUT (BRAKE)
+  
+  #define CURRENT_MONITOR_PIN_MAIN GPIO_NUM_36 // Mesure de courant
+  
+  
 
   Pour Arduino Uno en particulier, se reporter ici : https://www.locoduino.org/spip.php?article187
 
