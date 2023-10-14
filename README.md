@@ -32,7 +32,7 @@ Ce programme permet la réalisation d'une station de commande DCC en WiFi qui g�
 
   Pour plus d'informations sur le protocole de messagerie de DCC++ : https://github.com/DccPlusPlus/BaseStation/blob/master/DCC%2B%2B%20Arduino%20Sketch.pdf
 
-  Il est également possible de piloter cette centrale en utilisant un bus CAN. Il est nécessaire de décommenter la ligne #define CAN_INTERFACE du fichier config.h, 
+  Il est également possible de piloter cette centrale en utilisant un bus CAN par l'intermédiaire d'un transceiver MCP2562 par exemple. Il est nécessaire de décommenter la ligne #define CAN_INTERFACE du fichier config.h, 
   de relier les liaisons can_h et can_l aux broches GPIO_NUM_22 et GPIO_NUM_23 de l'ESP32.
 
   /* ----- CAN ----------------------*/
