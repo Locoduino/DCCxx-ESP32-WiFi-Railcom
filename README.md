@@ -103,8 +103,6 @@ Le message CAN pour commander la central devra respecter les regles suivantes :
   
   
 
-  Pour Arduino Uno en particulier, se reporter ici : https://www.locoduino.org/spip.php?article187
-
 ****************************************************************************************************************************************
   ATTENTION à parametrer le protection de courant à une valeur correspondant à votre configuration
   #define CURRENT_SAMPLE_MAX 3200 // 2,7 V étant une valeur raisonnable à ne pas dépasser
