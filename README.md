@@ -52,7 +52,7 @@ Le message CAN pour commander la central devra respecter les regles suivantes :
 
 - data[0] la valeur interne de la centrale pour commande DCC => 0xF0
 - L'adresse de la locomotive (big-endian), c'est à dire, l'adresse courte dans data[2] et 0 dans data[1].
-- Et pour une adresse longue, le LSB dans data[1] et le MSB dans data[0]
+- Et pour une adresse longue, le MSB dans data[1] et le LSB dans data[2]
 - La vitesse (sur 128 crans) dans data[3]
 - La direction dans data[4]
 
