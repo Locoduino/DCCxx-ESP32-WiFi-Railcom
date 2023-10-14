@@ -36,14 +36,21 @@ Ce programme permet la réalisation d'une station de commande DCC en WiFi qui g�
   de relier les liaisons can_h et can_l aux broches GPIO_NUM_22 et GPIO_NUM_23 de l'ESP32.
 
   /* ----- CAN ----------------------*/
+  
   #define CAN_INTERFACE
+  
   #define CAN_RX GPIO_NUM_22
+  
   #define CAN_TX GPIO_NUM_23
+  
   #define CAN_BITRATE 1000UL * 1000UL // 1 Mb/s
+  
+  /* -------------------------------*/
+
   
 Le message CAN pour commander la central devra respecter les regles suivantes :
 
-- data[0] la valeur de la fonction appelée 0xF0
+- data[0] la valeur interne de la centrale pour commande DCC => 0xF0
 - L'adresse de la locomotive (big-endian), c'est à dire, l'adresse courte dans data[2] et 0 dans data[1].
 - Et pour une adresse longue, le LSB dans data[1] et le MSB dans data[0]
 - La vitesse (sur 128 crans) dans data[3]
@@ -52,19 +59,33 @@ Le message CAN pour commander la central devra respecter les regles suivantes :
   Voici l'extrait du code concerné par la transmission CAN :
   
 #ifdef CAN_INTERFACE
+
     CANMessage frame;
+    
     if (ACAN_ESP32::can.receive(frame))
+    
     {
+    
       Serial.println(frame.data[0]);
+      
       if (frame.data[0] == 0xF0)
+      
       {
+      
         //      uint16_t locoAddr = frame.data[1] << 8 + frame.data[2];
+        
         //      uint8_t locoSpeed = frame.data[3];
+        
         //      uint8_t locoDir = frame.data[4];
+        
         dcc.setThrottle((frame.data[1] << 8) + frame.data[2], frame.data[3], frame.data[4]);
+        
       }
+      
     }
+    
 #endif
+
 
 
   
